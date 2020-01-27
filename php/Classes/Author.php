@@ -106,15 +106,15 @@ class Author {
 	 */
 	public function getAuthorAvatarUrl(): string {
 		return ($this->authorAvatarUrl);
-	};
-};
+	}
+}
 
 /**
  * mutator method for author avatar URL
  *
  * @param string $newAuthorAvatarUrl new value for author avatar URL
  * @throws \InvalidArgumentException if $newAuthorAvatarUrl is not a string or insecure
- * @throws \RangeException if $newAuthorAvatarUrl is > 140 characters
+ * @throws \RangeException if $newAuthorAvatarUrl is > 255 characters
  * @throws \TypeError if $newAuthorAvatarUrl is not a string
  */
 public function setAuthorAvatarUrl(string $newAuthorAvatarUrl) : void {
@@ -126,7 +126,7 @@ public function setAuthorAvatarUrl(string $newAuthorAvatarUrl) : void {
 	}
 
 	//verify the author avatar url will fit in the database
-	if(strlen($newAuthorAvatarUrl) > 140) {
+	if(strlen($newAuthorAvatarUrl) > 255) {
 		throw(new \RangeException("author avatar url is too large"));
 	}
 
