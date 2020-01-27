@@ -1,6 +1,6 @@
 <?php
 
-namespace Matthewurrea\ObjectOriented\;
+namespace Matthewurrea\ObjectOriented;
 
 require_once ("autoload.php");
 require_once (dirname(__DIR__)) . "/vendor/autoload.php";
@@ -38,7 +38,7 @@ class Author {
    private $authorEmail;
    /**
     * id for author's password
-    * @var Uuid $authorHash
+    * @var string $authorHash
     */
    private $authorHash;
    /**
@@ -51,7 +51,7 @@ class Author {
     * constructor method for author
     *
     **/
-   public function __construct($authorId, $authorActivationToken, $authorAvatarUrl, $authorAvatarUrl, $authorEmail, $authorHash, $authorUsername)
+   public function __construct($authorId, $authorActivationToken, $authorAvatarUrl, $authorEmail, $authorHash, $authorUsername)
    {
       $this->authorId = $authorId;
       $this->authorActivationToken = $authorActivationToken;
@@ -100,7 +100,7 @@ class Author {
 
    /**
     * mutator method for author activation token
-    * @param string| Uuid $newAuthorActivationToken new value of author activation token
+    * @param string | Uuid $newAuthorActivationToken new value of author activation token
     * @throws \RangeException if $newAuthorActivationToken is not positive
     * @throws \TypeError if $newAuthorActivationToken is not an integer
     **/
@@ -109,7 +109,7 @@ class Author {
          $uuid = self::validateUuid($newAuthorActivationToken);
       } catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
          $exceptiontype = get_class($exception);
-         throw(new $exceptionType($exception->getMessage(), 0, $exception));
+         throw(new ExceptionType($exception->getMessage(), 0, $exception));
       }
 
       //convert and store the author activation token
@@ -155,7 +155,7 @@ class Author {
     * @return string value of author email
     **/
    public function getAuthorEmail() : string {
-      return ($this->@$this->authorEmail);
+      return ($this->authorEmail);
    }
 
    /**
@@ -205,7 +205,7 @@ class Author {
          $uuid = self::validateUuid($newAuthorHash);
       }catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception){
          $exceptionType = get_class($exception);
-         throw(new $exceptionType($exception->getMessage(), 0 $exception));
+         throw(new $exceptionType($exception->getMessage(), 0, $exception));
       }
 
       //convert and store author hash

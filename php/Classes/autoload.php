@@ -1,6 +1,6 @@
 <?php
 
-   namespace matthewurrea\ObjectOriented\
+   namespace Matthewurrea\ObjectOriented;
    /**
     * PSR-4 Compliant Autoloader
     *
