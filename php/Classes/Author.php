@@ -49,8 +49,13 @@ class Author {
 
    /**
     * constructor method for author
-    *
-    **/
+    * @param $authorId id for the author
+    * @param $authorActivationToken activation token for the author
+    * @param $authorAvatarUrl avatar url for the author
+    * @param $authorEmail author email
+    * @param $authorHash password for the author
+    * @param $authorUsername username for the author
+    */
    public function __construct($authorId, $authorActivationToken, $authorAvatarUrl, $authorEmail, $authorHash, $authorUsername)
    {
       $this->authorId = $authorId;
@@ -94,26 +99,32 @@ class Author {
     *
     * @return Uuid value of activation token
     */
-   public function getAuthorActivationToken(): Uuid {
+   public function getAuthorActivationToken() : ?string {
       return ($this->authorActivationToken);
    }
 
    /**
     * mutator method for author activation token
-    * @param string | Uuid $newAuthorActivationToken new value of author activation token
-    * @throws \RangeException if $newAuthorActivationToken is not positive
-    * @throws \TypeError if $newAuthorActivationToken is not an integer
+    *
+    * @param string $newAuthorActivationToken
+    * @throws \InvalidArgumentException if the token is not a string or insecure
+    * @throws \RangeException if $newAuthorActivationToken is not exactly 32 characters
+    * @throws \TypeError if $newAuthorActivationToken is not an string
     **/
-   public function setAuthorActivationToken($newAuthorActivationToken): void {
-      try {
-         $uuid = self::validateUuid($newAuthorActivationToken);
-      } catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception) {
-         $exceptiontype = get_class($exception);
-         throw(new ExceptionType($exception->getMessage(), 0, $exception));
+   public function setAuthorActivationToken(?string $newAuthorActivationToken): void {
+      if($newAuthorActivationToken === null) {
+            $this->authorActivationToken = null;
+            return;
       }
-
-      //convert and store the author activation token
-      $this->authorActivationToken = $uuid;
+      $newAuthorActivationToken = strolower(trim($newAuthorActivationToken));
+      if(ctype_xdigit($newAuthorActivationToken) === false) {
+         throw(new\RangeException("user activation is not valid"));
+      }
+      //make sure user activation token is only 32 characters
+      if(strlen($newAuthorActivationToken) !== 32){
+            throw(new \RangeException("user activation token has to be 32"));
+      }
+      $this->authorActivationToken = $newAuthorActivationToken;
    }
 
    /**
@@ -186,36 +197,45 @@ class Author {
    /**
     * accessor method for author hash
     *
-    * @return Uuid value of author hash
+    * @return string value of author hash
     *
     */
-   public function getAuthorHash() : Uuid{
-      return($this->authorHash);
+   public function getAuthorHash() : string {
+      return $this->authorHash;
    }
 
    /**
     * mutator method for author hash
     *
-    * @param string | Uuid $newAuthorHash new value of author hash
-    * @throws \RangeException if $newAuthorHash is not positive
-    * @throws \TypeError if $newAuthorHash is not an integer
+    * @param string $newAuthorHash string contatining encrypted password
+    * @throws \InvalidArgumentException if the hash is not secure
+    * @throws \RangeException if $newAuthorHash is not 97 characters
+    * @throws \TypeError if $newAuthorHash is not a string
     */
-   public function setNewAuthorHash($newAuthorHash) : void{
-      try{
-         $uuid = self::validateUuid($newAuthorHash);
-      }catch(\InvalidArgumentException | \RangeException | \Exception | \TypeError $exception){
-         $exceptionType = get_class($exception);
-         throw(new $exceptionType($exception->getMessage(), 0, $exception));
+   public function setAuthorHash(string $newAuthorHash): void {
+      //enforce that the hash is properly formatted
+      $newAuthorHash = trim($newAuthorHash);
+      if(empty($newAuthorHash) === true) {
+         throw(new \InvalidArgumentException("author password hash empty or insecure"));
       }
-
-      //convert and store author hash
-      $this->authorHash = $uuid;
+      //enforce the hash is really an Argon hash
+      $authorHashInfo = password_get_info($newAuthorHash);
+      if($authorHashInfo["algoName"] !== "argon2i") {
+         throw(new \InvalidArgumentException("author hash is not a valid hash"));
+      }
+      //enforce that the hash is exactly 97 characters.
+      if(strlen($newAuthorHash) < 96) {
+         throw(new \RangeException("author hash must be less than 96 characters"));
+      }
+      //store the hash
+      $this->authorHash = $newAuthorHash;
    }
 
    /**
     * accessor method for author username
     *
-    * @return string value of author username
+    * @param string $newAuthorUsername
+    * @return void value of author username
     */
    public function getAuthorUsername(string $newAuthorUsername) : void{
       //verify username is secure
